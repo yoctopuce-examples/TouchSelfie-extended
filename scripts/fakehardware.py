@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
     dummy classes to fake hardware (for test only)
     Laurent Alacoque 2o18

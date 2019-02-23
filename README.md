@@ -7,6 +7,7 @@
  - [X] scripts/configuration.py
  - [X] scripts/constants.py
  - [X] scripts/cv2_camera.py
+ - [X] scripts/fakehardware.py
 
 # News! Now fully compatible with Google Photos API
 
