@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 """
     Unification of email sending and album uploading using OAuth2Login
     Code for Google Photos / Picasa taken from "credentials.py" at https://github.com/wyolum/TouchSelfie
@@ -170,7 +171,7 @@ class OAuthServices:
             for album in albums:
                 entry = {}
                 #skip albums with no title
-                if not ("title" in album.keys()):
+                if not ("title" in list(album.keys())):
                     continue
                 entry['title'] = album.get("title")
                 entry['id']    = album.get("id")
@@ -232,10 +233,13 @@ class OAuthServices:
                     filecontent=image_file.read()
             log.debug("upload_picture: uploading picture %s (%d bytes)"%(filename,len(filecontent)))
             (response,token) = http.request(url,method="POST",body=filecontent,headers=headers)
+            #token is bytes, let's assume utf8
+            token=token.decode("utf-8")
             if response.status != 200:
                 log.warning("upload_picture: response code for upload %d != 200"%response.status)
                 raise IOError("Error connecting to %s"%url)
             log.debug("upload_picture: Successfully uploaded image with id:[%s]"%token)
+            log.debug("%r"%response)
 
             # Step II: reference file Item
             if isinstance(caption,str):
@@ -359,13 +363,13 @@ class OAuthServices:
             msg.add_header('Content-Disposition', 'attachment', filename=filename)
             message.attach(msg)
 
-        return {'raw': base64.urlsafe_b64encode(message.as_string())}
+        return {'raw': base64.urlsafe_b64encode(message.as_string().encode('UTF-8')).decode('ascii')}
 
 def test():
     """ test email and uploading """
     logging.basicConfig()
 
-    username = raw_input("Please enter your email address: ")
+    username = input("Please enter your email address: ")
     
     # creating test image
     from PIL import Image
@@ -377,23 +381,23 @@ def test():
     im.save("test_image.png")
     
     # Connecting to Google
-    gservice = OAuthServices("client_id.json","storage.json",username,log_level=logging.DEBUG)
+    gservice = OAuthServices("google_client_id.json","storage.json",username,log_level=logging.DEBUG)
 
 
-    print "\nTesting email sending..."
-    print gservice.send_message(username,"oauth2 message sending works!","Here's the Message body",attachment_file="test_image.png")
-    print "\nTesting album list retrieval..."
+    print("\nTesting email sending...")
+    print((gservice.send_message(username,"oauth2 message sending works!","Here's the Message body",attachment_file="test_image.png")))
+    print("\nTesting album list retrieval...")
     albums = gservice.get_user_albums()
     for i, album in enumerate(albums):
-        print "\t title: %s, id: %s"%(album['title'],album['id'])
+        print(("\t title: %s, id: %s"%(album['title'],album['id'])))
         if i >= 10:
-            print "skipping the remaining albums..."
+            print("skipping the remaining albums...")
             break
-    print "\nTesting album creation and image upload"
+    print("\nTesting album creation and image upload")
     album_id = gservice.create_album(album_name="Test", add_placeholder_picture = True)
-    print "New album id:",album_id
+    print(("New album id:",album_id))
     print("Uploading to a bogus album")
-    print(gservice.upload_picture("testfile.png",album_id = "BOGUS STRING" , caption="In bogus album", generate_placeholder_picture = True))
+    print((gservice.upload_picture("testfile.png",album_id = "BOGUS STRING" , caption="In bogus album", generate_placeholder_picture = True)))
     
 
 if __name__ == '__main__':
