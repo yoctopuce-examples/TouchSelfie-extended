@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     A stylable touchscreen keyboard for Tkinter
     Laurent Alacoque 2o18
