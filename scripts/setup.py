@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     Graphical and Command-line setup scripts for TouchSelfie
 
@@ -17,16 +18,17 @@ try:
     import cups
     printer_selection_enable = True
 except ImportError:
-    print "Cups not installed. removing option"
+    print("Cups not installed. removing option")
     printer_selection_enable = False
 
 VALID_ICON_FILE = os.path.join("ressources","ic_valid.png")
 INVALID_ICON_FILE = os.path.join("ressources","ic_invalid.png")
 from PIL import Image as _Image
 from PIL import ImageTk as _ImageTk
-from Tkinter import *
-import tkFileDialog
-import tkMessageBox
+import tkinter as tk
+from tkinter import Tk,Frame,Button,IntVar,StringVar,Checkbutton,Label,Entry,LabelFrame,Text,Listbox
+import tkinter.filedialog
+import tkinter.messagebox
 import oauth2services
 
 #URL of the Google console developer assistant to create App_id file
@@ -52,10 +54,10 @@ class Assistant(Tk):
             self.buttons_frame = Frame(self, bg='white')
             self.b_next = Button(self.buttons_frame,text="Next", fg='white', bg=self.BUTTONS_BG,width=10, command=self.__increment, font='Helvetica')
             self.b_prev = Button(self.buttons_frame,text="Prev", fg='white', bg=self.BUTTONS_BG, width=10, command=self.__decrement, font='Helvetica')
-            self.main_frame.pack(fill=X,ipadx=10,ipady=10)
-            self.buttons_frame.pack(side=BOTTOM)
-            self.b_prev.pack(side=LEFT,padx=40)
-            self.b_next.pack(side=RIGHT,padx=40)
+            self.main_frame.pack(fill=tk.X,ipadx=10,ipady=10)
+            self.buttons_frame.pack(side=tk.BOTTOM)
+            self.b_prev.pack(side=tk.LEFT,padx=40)
+            self.b_next.pack(side=tk.RIGHT,padx=40)
             self.widgets=[]
 
             #variables
@@ -97,10 +99,10 @@ class Assistant(Tk):
 
                             for printer in printers:
                                 #print printer, printers[printer]["device-uri"]
-                                self.use_print_list.insert(END, printer)
+                                self.use_print_list.insert(tk.END, printer)
                             self.__draw_page()
                         except:
-                            tkMessageBox.showerror("Missing Driver","""You need CUPS installed and a printer setup. Please look in the Readme file for a link on how to setup CUPS on your system. The printer option will be disabled for this setup.""")
+                            tkinter.messagebox.showerror("Missing Driver","""You need CUPS installed and a printer setup. Please look in the Readme file for a link on how to setup CUPS on your system. The printer option will be disabled for this setup.""")
                             self.__erase_page()
                             self.widgets.pop(0)
                             self.widgets.insert(0,[self.want_email_cb, self.want_upload_cb,self.want_effects_cb, self.use_soft_keyboard_cb])
@@ -116,12 +118,12 @@ class Assistant(Tk):
 
             if printer_selection_enable == True:self.want_print_var.trace("w",on_want_print_change)
 
-            self.want_email_cb  = Checkbutton(self.main_frame, text="Enable Email sending", variable=self.want_email_var, anchor=W, font='Helvetica')
-            self.want_upload_cb  = Checkbutton(self.main_frame, text="Enable photo upload", variable=self.want_upload_var, anchor=W, font='Helvetica')
-            self.want_effects_cb  = Checkbutton(self.main_frame, text="Enable image effects", variable=self.want_effects_var, anchor=W, font='Helvetica')
+            self.want_email_cb  = Checkbutton(self.main_frame, text="Enable Email sending", variable=self.want_email_var, anchor=tk.W, font='Helvetica')
+            self.want_upload_cb  = Checkbutton(self.main_frame, text="Enable photo upload", variable=self.want_upload_var, anchor=tk.W, font='Helvetica')
+            self.want_effects_cb  = Checkbutton(self.main_frame, text="Enable image effects", variable=self.want_effects_var, anchor=tk.W, font='Helvetica')
 
             if printer_selection_enable == True:
-                self.want_print_cb = Checkbutton(self.main_frame, text="Enable photo print", variable=self.want_print_var, anchor=W, font='Helvetica')
+                self.want_print_cb = Checkbutton(self.main_frame, text="Enable photo print", variable=self.want_print_var, anchor=tk.W, font='Helvetica')
                 self.want_printer_val = int()
 
             #self.want_printer_val.set(config.selected_printer)
@@ -130,7 +132,7 @@ class Assistant(Tk):
                 self.want_printer_val = int(printer_selected.curselection()[0])
                 self.config.selected_printer = self.want_printer_val
                 #value = self.want_printer_val.get(index)
-                print 'You selected item %d: ' % (self.want_printer_val)
+                print('You selected item %d: ' % (self.want_printer_val))
 
 
             #checkbutton to choose to use soft keyboard
@@ -141,14 +143,14 @@ class Assistant(Tk):
             self.use_soft_keyboard_var.trace("w",on_use_soft_keyboard)
             self.use_soft_keyboard_var.set(0)
 
-            self.use_soft_keyboard_cb = Checkbutton(self.main_frame, text="Enable software keyboard (for this configuration)", variable=self.use_soft_keyboard_var, anchor=W, font='Helvetica')
+            self.use_soft_keyboard_cb = Checkbutton(self.main_frame, text="Enable software keyboard (for this configuration)", variable=self.use_soft_keyboard_var, anchor=tk.W, font='Helvetica')
             if self.printer_selection_enable == True:
                 self.widgets.append([self.want_email_cb, self.want_upload_cb, self.want_effects_cb,self.want_print_cb,self.use_soft_keyboard_cb])
             else:
                 self.widgets.append([self.want_email_cb, self.want_upload_cb,self.want_effects_cb,self.use_soft_keyboard_cb])
 
             #PAGE 1 google credentials
-            self.user_mail_label = Label(self.main_frame,text="Google Account", font='Helvetica', anchor=W)
+            self.user_mail_label = Label(self.main_frame,text="Google Account", font='Helvetica', anchor=tk.W)
             self.user_mail_var  = StringVar()
             def on_mail_change(*args):
                 self.config.user_name = self.user_mail_var.get()
@@ -190,14 +192,14 @@ class Assistant(Tk):
                 self.config.emailMsg = self.email_body_var.get()
             self.email_body_var.trace("w",on_mail_body_change)
 
-            self.email_title_label = Label(self.main_frame,text="Email subject:", font='Helvetica', anchor=W)
+            self.email_title_label = Label(self.main_frame,text="Email subject:", font='Helvetica', anchor=tk.W)
             self.email_title_entry = Entry(self.main_frame, textvariable=self.email_title_var, font='Helvetica', width = 40)
             self.__install_soft_keyboard(self.email_title_entry, self.email_title_var)
 
-            self.email_body_label = Label(self.main_frame,text="Email body:", font='Helvetica', anchor=W)
+            self.email_body_label = Label(self.main_frame,text="Email body:", font='Helvetica', anchor=tk.W)
             #self.email_body_entry = Entry(self.main_frame, textvariable=self.email_body_var, width = 40)
             self.email_body_entry =  Text(self.main_frame, font='Helvetica', height=5)
-            self.email_body_entry.insert(INSERT,self.email_body_var.get())
+            self.email_body_entry.insert(tk.INSERT,self.email_body_var.get())
             self.__install_soft_keyboard(self.email_body_entry,self.email_body_var)
 
             self.email_logging_var = IntVar()
@@ -206,7 +208,7 @@ class Assistant(Tk):
             def on_email_logging_change(*args):
                 self.config.enable_email_logging = self.email_logging_var.get() != 0
             self.email_logging_var.trace("w",on_email_logging_change)
-            self.email_logging_cb = Checkbutton(self.main_frame, text="Log email addresses?", variable=self.email_logging_var, anchor=W, font='Helvetica')
+            self.email_logging_cb = Checkbutton(self.main_frame, text="Log email addresses?", variable=self.email_logging_var, anchor=tk.W, font='Helvetica')
 
 
             def test_email():
@@ -225,7 +227,7 @@ class Assistant(Tk):
 
             #PAGE 3 Album ID
 
-            self.album_name_label = Label(self.main_frame,text="Google Photo Album:", font='Helvetica', anchor=W)
+            self.album_name_label = Label(self.main_frame,text="Google Photo Album:", font='Helvetica', anchor=tk.W)
 
             self.album_name_var = StringVar()
             def on_album_name_change(*args):
@@ -249,27 +251,27 @@ class Assistant(Tk):
             self.album_id_var.set(config.albumID) #TODO: restore this eventually
             #self.album_id_var.set(None) # No Album
 
-            self.album_id_label = Label(self.main_frame,text="Album ID", font='Helvetica', anchor=W)
-            self.album_name_entry = Entry(self.main_frame,textvariable=self.album_name_var, font='Helvetica', state=DISABLED, disabledbackground="#eeeeee", disabledforeground="#222222")
+            self.album_id_label = Label(self.main_frame,text="Album ID", font='Helvetica', anchor=tk.W)
+            self.album_name_entry = Entry(self.main_frame,textvariable=self.album_name_var, font='Helvetica', state=tk.DISABLED, disabledbackground="#eeeeee", disabledforeground="#222222")
             self.album_name_entry.config(fg="black",bg="#eeeeee")
-            self.album_id_entry = Entry(self.main_frame,textvariable = self.album_id_var, font='Helvetica', state=DISABLED)
+            self.album_id_entry = Entry(self.main_frame,textvariable = self.album_id_var, font='Helvetica', state=tk.DISABLED)
 
             def select_album():
                 """Popup control to select albums"""
-                print "Album selection"
+                print("Album selection")
                 connected=False
                 try:
                     connected = self.google_service.refresh()
                 except:
                     pass
                 if not connected:
-                    print "Error: impossible to connect to Google\n"
+                    print("Error: impossible to connect to Google\n")
                     return
                 #Create an album selection control
-                top = Toplevel(self,bg='white')
+                top = tk.Toplevel(self,bg='white')
                 top.geometry("450x400")
                 loading_lbl = Label(top,text="Loading album list...", bg='white', font='Helvetica')
-                loading_lbl.pack(fill=X)
+                loading_lbl.pack(fill=tk.X)
                 top.update()
                 album_list = self.google_service.get_user_albums()
                 
@@ -280,11 +282,11 @@ class Assistant(Tk):
                 pattern_entry = Entry(top,font='Helvetica',textvariable=pattern_var)
                 self.__install_soft_keyboard(pattern_entry, pattern_var)
 
-                pattern_entry.pack(fill=X)
+                pattern_entry.pack(fill=tk.X)
 
                 list_box_items = 15
-                album_listbox = Listbox(top,height=list_box_items, font='Helvetica', selectmode=SINGLE)
-                album_listbox.pack(fill=X)
+                album_listbox = Listbox(top,height=list_box_items, font='Helvetica', selectmode=tk.SINGLE)
+                album_listbox.pack(fill=tk.X)
 
                 displayed_list_ids=["idstart"]
                 displayed_list_names=["namestart"]
@@ -295,9 +297,9 @@ class Assistant(Tk):
                     #clear
                     displayed_list_ids = ["","<New>"]
                     displayed_list_names=["<No Album>","<Create New>"]
-                    album_listbox.delete(0,END)
-                    album_listbox.insert(END,"<No Album>")
-                    album_listbox.insert(END,"<Create New>")
+                    album_listbox.delete(0,tk.END)
+                    album_listbox.insert(tk.END,"<No Album>")
+                    album_listbox.insert(tk.END,"<Create New>")
                     inserted_items = 0
                     for i, item in enumerate(album_list):
                         if inserted_items >= list_box_items-1:
@@ -306,7 +308,7 @@ class Assistant(Tk):
                         title_ = title.lower()
                         id    = item['id']
                         if title_.find(pattern.lower()) != -1:
-                            album_listbox.insert(END,item['title'])
+                            album_listbox.insert(tk.END,item['title'])
                             displayed_list_ids.append(id)
                             displayed_list_names.append(title)
                             inserted_items += 1
@@ -322,7 +324,7 @@ class Assistant(Tk):
                     #print cursel
                     #print displayed_list_ids
                     #print displayed_list_names
-                    print "selected album '%s' with id '%s'"%(displayed_list_names[cursel],displayed_list_ids[cursel])
+                    print("selected album '%s' with id '%s'"%(displayed_list_names[cursel],displayed_list_ids[cursel]))
                     if displayed_list_names[cursel] == "<Create New>":
                         try:
                             #No album found, create one
@@ -346,7 +348,7 @@ class Assistant(Tk):
             self.album_bframe = Frame(self.main_frame, bg='white')
 
             self.album_select_button = Button(self.album_bframe,text='Select',fg='white',bg=self.BUTTONS_BG, command=select_album, font='Helvetica')
-            self.album_select_button.pack(side=LEFT)
+            self.album_select_button.pack(side=tk.LEFT)
 
             
 
@@ -356,7 +358,7 @@ class Assistant(Tk):
                 self.__test_connection(False,True)
 
             self.upload_test_button = Button(self.album_bframe, text='Test Upload',fg='white',bg=self.BUTTONS_BG, command=test_upload, font='Helvetica')
-            self.upload_test_button.pack(side=RIGHT)
+            self.upload_test_button.pack(side=tk.RIGHT)
 
 
             #self.widgets.append([self.album_name_label,self.current_album_label,self.album_name_entry,self.album_id_label, self.album_id_entry,self.album_bframe])
@@ -372,7 +374,7 @@ class Assistant(Tk):
             self.archive_var.trace("w",on_archive_change)
 
 
-            self.archive_dir_label = Label(self.main_frame,text="Local directory for archive:", font='Helvetica', anchor=W)
+            self.archive_dir_label = Label(self.main_frame,text="Local directory for archive:", font='Helvetica', anchor=tk.W)
             self.archive_dir_var = StringVar()
             self.archive_dir_var.set(config.archive_dir)
             def on_archive_dir_change(*args):
@@ -382,22 +384,22 @@ class Assistant(Tk):
             self.archive_dir_entry = Entry(self.main_frame, textvariable=self.archive_dir_var, width = 40, font='Helvetica')
             self.__install_soft_keyboard(self.archive_dir_entry,self.archive_dir_var)
             def change_dir():
-                directory = tkFileDialog.askdirectory(initialdir=self.archive_dir_var.get(), title="Choose directory for snapshots archive")
+                directory = tkinter.filedialog.askdirectory(initialdir=self.archive_dir_var.get(), title="Choose directory for snapshots archive")
                 self.archive_dir_var.set(directory)
-                print "changed dir to %s"%directory
+                print("changed dir to %s"%directory)
 
             self.choose_archive_dir_button = Button(self.main_frame, text="Choose directory", fg='white',bg=self.BUTTONS_BG, font='Helvetica', command=change_dir)
 
 
             def enable_archive_dir():
                 if self.archive_var.get() == 0:
-                    self.archive_dir_entry.config(state = DISABLED)
-                    self.choose_archive_dir_button.config(state = DISABLED, bg='white',fg='grey')
+                    self.archive_dir_entry.config(state = tk.DISABLED)
+                    self.choose_archive_dir_button.config(state = tk.DISABLED, bg='white',fg='grey')
                 else:
-                    self.archive_dir_entry.config(state = NORMAL)
-                    self.choose_archive_dir_button.config(state = NORMAL, bg=self.BUTTONS_BG,fg='white')
+                    self.archive_dir_entry.config(state = tk.NORMAL)
+                    self.choose_archive_dir_button.config(state = tk.NORMAL, bg=self.BUTTONS_BG,fg='white')
 
-            self.archive_cb = Checkbutton(self.main_frame,text="Archive snapshots locally", variable = self.archive_var, command=enable_archive_dir, font='Helvetica', anchor=W)
+            self.archive_cb = Checkbutton(self.main_frame,text="Archive snapshots locally", variable = self.archive_var, command=enable_archive_dir, font='Helvetica', anchor=tk.W)
             enable_archive_dir()
             self.widgets.append([
                 self.archive_cb,
@@ -408,7 +410,7 @@ class Assistant(Tk):
             for widget_page in self.widgets:
                 for widget in widget_page:
                     if widget.winfo_class() == 'Button':
-                        if widget['state'] != DISABLED:
+                        if widget['state'] != tk.DISABLED:
                             widget.config(foreground='white',background=self.BUTTONS_BG)
                         else:
                             widget.config(foreground='grey',background=self.BUTTONS_BG_INACTIVE)
@@ -427,11 +429,11 @@ class Assistant(Tk):
         return self.email_body_var.get()
 
     def __remove_app_id(self):
-        print "removing %s"%constants.APP_ID_FILE
+        print("removing %s"%constants.APP_ID_FILE)
         self.__ask_for_removal(constants.APP_ID_FILE,"Are you sure you want to remove the App ID file?\nYou'll need to download it again from your developer's console.")
 
     def __remove_cred_store(self):
-        print "removing %s"%constants.CREDENTIALS_STORE_FILE
+        print("removing %s"%constants.CREDENTIALS_STORE_FILE)
         self.__ask_for_removal(constants.CREDENTIALS_STORE_FILE,"Are you sure you want to remove the credentials storage file?\nYou'll need to authorize your application again.")
 
     def __install_soft_keyboard(self,entry,stringvar):
@@ -447,12 +449,12 @@ class Assistant(Tk):
                     self.soft_keyboard.destroy()
                     self.soft_keyboard = None
             def onEnter(*args):
-                print "updating value"
+                print("updating value")
                 if entry.winfo_class() == 'Text':
                     #copy the content of stringvar that just got modified into the text
                     text_content = stringvar.get()
-                    entry.delete('1.0',END)
-                    entry.insert(END, text_content)
+                    entry.delete('1.0',tk.END)
+                    entry.insert(tk.END, text_content)
                 kill_keyboard()
 
             mykb.TouchKeyboard(self.soft_keyboard, stringvar, onEnter = onEnter)
@@ -462,7 +464,7 @@ class Assistant(Tk):
         entry.bind('<Button-1>',launch_keyboard)
 
     def __get_app_id(self):
-        print "Getting App ID"
+        print("Getting App ID")
         message="""    ________________________________________________________________
 
     Photo upload or email sending requires that you create a
@@ -494,7 +496,7 @@ class Assistant(Tk):
         #Create a toplevel window with checkboxes and a "Quit application button"
         top = Toplevel(self)
         text_frame=Frame(top, bg='white')
-        text_frame.pack(side=TOP,fill=X)
+        text_frame.pack(side=tk.TOP,fill=tk.X)
 
 
         def launch_browser():
@@ -502,50 +504,50 @@ class Assistant(Tk):
             webbrowser.open(GET_APP_ID_WIZARD_URL)
 
         button_frame = Frame(top,bg='white')
-        button_frame.pack(side=BOTTOM, fill=X)
+        button_frame.pack(side=tk.BOTTOM, fill=tk.X)
         qb = Button(button_frame,text="Launch browser", font='Helvetica', fg="white", bg=self.BUTTONS_BG, command=launch_browser)
-        qb.pack( side = LEFT,pady=20,padx=20)
+        qb.pack( side = tk.LEFT,pady=20,padx=20)
         dismiss_button = Button(button_frame,text="Dismiss", font='Helvetica', fg="white", bg=self.BUTTONS_BG, command=top.destroy)
-        dismiss_button.pack( side= RIGHT, pady=20,padx=20)
+        dismiss_button.pack( side= tk.RIGHT, pady=20,padx=20)
 
         message_box = Text(text_frame, font=('Helvetica',10), height=25)
         message_box.insert(INSERT,message)
-        message_box.pack(fill=X)
+        message_box.pack(fill=tk.X)
         self.wait_window(top)
 
         #update displayed
         self.__check_credentials_files()
 
     def __connect_app(self):
-        print "Connecting App"
+        print("Connecting App")
 
         #Create a graphical handler for the authorization
         def auth_handler(URI):
             top = Toplevel(self, bg='white')
             text_frame=Frame(top, bg='white')
-            text_frame.pack(side=TOP,fill=X)
+            text_frame.pack(side=tk.TOP,fill=tk.X)
 
             button_frame = Frame(top,bg='white')
             qb = Button(button_frame, text="Start", font='Helvetica', fg="white", bg=self.BUTTONS_BG)
-            qb.pack( side = LEFT,pady=20,padx=20)
+            qb.pack( side = tk.LEFT,pady=20,padx=20)
             dismiss_button = Button(button_frame, text="Dismiss", font='Helvetica', fg="white", bg=self.BUTTONS_BG, command=top.destroy)
-            dismiss_button.pack( side= RIGHT, pady=20,padx=20)
-            button_frame.pack(fill=X)
+            dismiss_button.pack( side= tk.RIGHT, pady=20,padx=20)
+            button_frame.pack(fill=tk.X)
 
             code_frame = LabelFrame(top,bg='white',text="Authorization Code")
             code_frame_top = Frame(code_frame, bg='white')
-            code_frame_top.pack(fill=X)
+            code_frame_top.pack(fill=tk.X)
             code_frame_bot = Frame(code_frame, bg='white')
-            code_frame_bot.pack(fill=X)
+            code_frame_bot.pack(fill=tk.X)
             auth_code = StringVar()
             code_entry = Entry(code_frame_top, textvariable = auth_code, font='Helvetica', width=40)
             self.__install_soft_keyboard(code_entry,auth_code)
-            code_entry.pack(side=LEFT, padx=20, pady=20)
+            code_entry.pack(side=tk.LEFT, padx=20, pady=20)
             paste_button = Button(code_frame_top,text="Paste",font='Helvetica',fg='white',bg=self.BUTTONS_BG, command = lambda *args: auth_code.set(self.clipboard_get()))
-            paste_button.pack(side=RIGHT,padx=20,pady=20)
+            paste_button.pack(side=tk.RIGHT,padx=20,pady=20)
 
             ok_button = Button(code_frame_bot,text="Authenticate", font='Helvetica',fg='white',bg=self.BUTTONS_BG, command=top.destroy)
-            ok_button.pack(fill=X,padx=20,pady=20)
+            ok_button.pack(fill=tk.X,padx=20,pady=20)
 
 
 
@@ -558,11 +560,11 @@ Click the Start button below:
        - send emails
        - upload pictures
 """)
-            message_box.pack(fill=X)
+            message_box.pack(fill=tk.X)
 
             def authenticate():
                 button_frame.pack_forget()
-                code_frame.pack(fill=X, padx=10, pady=10)
+                code_frame.pack(fill=tk.X, padx=10, pady=10)
                 import webbrowser
                 webbrowser.open(URI)
 
@@ -571,31 +573,31 @@ Click the Start button below:
 
             self.wait_window(top)
             #update displayed
-            print "returning code %s"%auth_code.get()
+            print("returning code %s"%auth_code.get())
             return auth_code.get()
-        print "Trying the connexion"
+        print("Trying the connexion")
         #try to connect
         try:
 
             self.google_service = oauth2services.OAuthServices(constants.APP_ID_FILE,constants.CREDENTIALS_STORE_FILE,self.user_mail_var.get() )
-            print self.google_service.refresh()
+            print(self.google_service.refresh())
         except Exception as error:
             self.google_service = None
-            print error
+            print(error)
             import traceback
             traceback.print_exc()
         self.__check_credentials_files()
 
     def __ask_for_removal(self,file,message):
-        result = tkMessageBox.askquestion("Delete File", message, icon='warning')
+        result = tkinter.messagebox.askquestion("Delete File", message, icon='warning')
         if result == 'yes':
             try:
                 os.remove(file)
-                print "%s deleted"%file
+                print("%s deleted"%file)
             except:
                 pass
         else:
-            print "Canceled"
+            print("Canceled")
         #repaint the control
         self.__check_credentials_files()
 
@@ -633,37 +635,37 @@ Click the Start button below:
         has_cred_store = check_cred_store()
 
         self.app_id_frame = Frame(self.credentials_frame,bg='white')
-        self.app_id_frame.pack(fill=X)
+        self.app_id_frame.pack(fill=tk.X)
         self.cred_store_frame = Frame(self.credentials_frame,bg='white')
-        self.cred_store_frame.pack(fill=X)
+        self.cred_store_frame.pack(fill=tk.X)
         if not has_app_id:
-            self.app_id_label  = Label(self.app_id_frame, text="Application ID is missing", image=self.invalid_icon, compound=LEFT, font='Helvetica', bg='white')
+            self.app_id_label  = Label(self.app_id_frame, text="Application ID is missing", image=self.invalid_icon, compound=tk.LEFT, font='Helvetica', bg='white')
             self.app_id_button = Button(self.app_id_frame, text="Get AppID", command=self.__get_app_id, font='Helvetica', fg='white',bg=self.BUTTONS_BG)
         else:
-            self.app_id_label  = Label(self.app_id_frame, text="Application ID found", image=self.valid_icon, compound=LEFT, font='Helvetica', bg='white')
+            self.app_id_label  = Label(self.app_id_frame, text="Application ID found", image=self.valid_icon, compound=tk.LEFT, font='Helvetica', bg='white')
             self.app_id_button = Button(self.app_id_frame, text="Remove?", command=self.__remove_app_id, font='Helvetica', fg='white', bg=self.BUTTONS_BG)
 
-        self.app_id_label.pack(side=LEFT,padx=20)
-        self.app_id_button.pack(side=RIGHT,padx=20)
+        self.app_id_label.pack(side=tk.LEFT,padx=20)
+        self.app_id_button.pack(side=tk.RIGHT,padx=20)
 
         if not has_cred_store:
-            self.cred_store_label = Label(self.cred_store_frame, text = "Credential store is missing", image=self.invalid_icon, compound=LEFT, font='Helvetica', bg = 'white')
+            self.cred_store_label = Label(self.cred_store_frame, text = "Credential store is missing", image=self.invalid_icon, compound=tk.LEFT, font='Helvetica', bg = 'white')
             self.cred_store_button = Button(self.cred_store_frame, text = "Connect", command=self.__connect_app, font='Helvetica', bg = self.BUTTONS_BG, fg='white')
         else:
-            self.cred_store_label = Label(self.cred_store_frame, text = "Credential store found", image=self.valid_icon, compound=LEFT, font='Helvetica', bg = 'white')
+            self.cred_store_label = Label(self.cred_store_frame, text = "Credential store found", image=self.valid_icon, compound=tk.LEFT, font='Helvetica', bg = 'white')
             self.cred_store_button = Button(self.cred_store_frame, text = "Remove?", command=self.__remove_cred_store, font='Helvetica', bg = self.BUTTONS_BG, fg='white')
 
-        self.cred_store_label.pack(side=LEFT,padx=20)
-        self.cred_store_button.pack(side=RIGHT,padx=20)
+        self.cred_store_label.pack(side=tk.LEFT,padx=20)
+        self.cred_store_button.pack(side=tk.RIGHT,padx=20)
         if not has_app_id:
-            self.cred_store_button.config(state=DISABLED,bg=self.BUTTONS_BG_INACTIVE)
+            self.cred_store_button.config(state=tk.DISABLED,bg=self.BUTTONS_BG_INACTIVE)
         else:
-            self.cred_store_button.config(state=NORMAL,bg=self.BUTTONS_BG)
+            self.cred_store_button.config(state=tk.NORMAL,bg=self.BUTTONS_BG)
 
         if (not has_app_id) or (not has_cred_store):
-            self.b_next.config(state=DISABLED, bg=self.BUTTONS_BG_INACTIVE)
+            self.b_next.config(state=tk.DISABLED, bg=self.BUTTONS_BG_INACTIVE)
         else:
-            self.b_next.config(state=NORMAL, bg= self.BUTTONS_BG)
+            self.b_next.config(state=tk.NORMAL, bg= self.BUTTONS_BG)
 
 
     def __decrement(self):
@@ -715,17 +717,17 @@ Click the Start button below:
 
         if self.page <= 0:
             self.page = 0
-            self.b_prev.config(state=DISABLED)
+            self.b_prev.config(state=tk.DISABLED)
             self.b_prev.config(bg=self.BUTTONS_BG_INACTIVE)
         else:
-            self.b_prev.config(state=NORMAL)
+            self.b_prev.config(state=tk.NORMAL)
             self.b_prev.config(bg=self.BUTTONS_BG)
 
         if self.page >= len(self.widgets)-1:
             self.page = len(self.widgets)-1
             self.b_next.configure(text="Save",command=self.__save_and_exit, bg=self.BUTTONS_BG_ACTION)
         else:
-            self.b_next.config(state=NORMAL)
+            self.b_next.config(state=tk.NORMAL)
             self.b_next.configure(text="Next",command=self.__increment, bg=self.BUTTONS_BG)
 
         #regenerate credentials state
@@ -733,11 +735,11 @@ Click the Start button below:
             self.__check_credentials_files()
 
         for w in self.widgets[self.page]:
-            w.pack(fill=X,padx=20, pady=10)
+            w.pack(fill=tk.X,padx=20, pady=10)
             self.packed_widgets.append(w)
 
     def __save_and_exit(self):
-        print "bye!"
+        print("bye!")
         #finally create a personalized script to run the photobooth
         install_dir = os.path.split(os.path.abspath(__file__))[0]
         script_name = os.path.join(os.path.abspath(".."),"photobooth.sh")
@@ -761,7 +763,7 @@ Click the Start button below:
             return
         username = self.user_mail_var.get()
         if self.google_service is None:
-            print "Unable to test service: no connection"
+            print("Unable to test service: no connection")
             return False
 
         # creating test image (a 32x32 image with random color)
@@ -773,10 +775,10 @@ Click the Start button below:
         im = Image.new("RGB", (32, 32), (r,g,b))
         im.save("test_image.png")
         if test_email:
-            print "\nSending a test message to %s"%username
+            print("\nSending a test message to %s"%username)
             self.google_service.send_message(username,self.config.emailSubject,self.config.emailMsg,attachment_file="test_image.png")
         if test_upload:
-            print "\nTesting picture upload in %s's album with id %s:"%(username,self.config.albumID)
+            print("\nTesting picture upload in %s's album with id %s:"%(username,self.config.albumID))
 
             self.google_service.upload_picture("test_image.png", album_id = self.config.albumID)
 
@@ -799,7 +801,7 @@ def graphical_assistant():
 def console_assistant():
     """Launches the text-based interface"""
 
-    print """
+    print("""
     ________________________________________________________________
 
     Welcome to the installation assistant!
@@ -807,7 +809,7 @@ def console_assistant():
     credentials
     ________________________________________________________________
 
-    """
+    """)
     install_dir = os.path.split(os.path.abspath(__file__))[0]
 
 
@@ -817,14 +819,14 @@ def console_assistant():
 
 
     config.enable_email = ask_boolean("Do you want the 'send photo by email' feature?",config.enable_email)
-    print ""
+    print("")
     config.enable_upload = ask_boolean("Do you want the 'auto-upload photos' feature?",config.enable_upload)
-    print ""
+    print("")
     config.enable_effects = ask_boolean("Do you want the 'Photos effects' feature?",config.enable_effects)
-    print ""
+    print("")
     if printer_selection_enable == True:
         config.enable_print = ask_boolean("Do you want the 'Send photo to printer' feature?", config.enable_print)
-        print ""
+        print("")
         if config.enable_print == True:
             conn = cups.Connection()
             printers = conn.getPrinters()
@@ -832,12 +834,12 @@ def console_assistant():
             selectedindex = 0
             for printer in printers:
                 if config.selected_printer == str(index):
-                    print '[*] ['+str(index)+'] '+printer
+                    print('[*] ['+str(index)+'] '+printer)
                     selectedindex = index
                 else:
-                    print '[ ] ['+str(index)+'] '+printer
+                    print('[ ] ['+str(index)+'] '+printer)
                 index = index + 1
-            config.selected_printer = raw_input("Seleted printer: [%s] confirm or change =>" % config.selected_printer)
+            config.selected_printer = input("Seleted printer: [%s] confirm or change =>" % config.selected_printer)
             if config.selected_printer is "": config.selected_printer = selectedindex
 
     want_email  = config.enable_email
@@ -852,7 +854,7 @@ def console_assistant():
     config.write()
     if need_credentials:
         # Check for user account
-        _username = raw_input("Google account: [%s] confirm or change => " % config.user_name)
+        _username = input("Google account: [%s] confirm or change => " % config.user_name)
         if _username != "":
             config.user_name = _username.strip()
             config.write()
@@ -860,9 +862,9 @@ def console_assistant():
         app_id     = os.path.join(install_dir,constants.APP_ID_FILE)
 
         if os.path.exists(app_id):
-            print "\n** found %s application file, will use it (remove in case of problems)"%constants.APP_ID_FILE
+            print("\n** found %s application file, will use it (remove in case of problems)"%constants.APP_ID_FILE)
         else:
-            print """
+            print("""
     ________________________________________________________________
 
     Photo upload or email sending requires that you create a
@@ -889,79 +891,79 @@ def console_assistant():
 
     The installation program will now exit.
     Run it again once this is done
-    """%(app_id)
+    """%(app_id))
             sys.exit()
 
         # We do have the client_id !
 
         cred_store = os.path.join(install_dir,constants.CREDENTIALS_STORE_FILE)
         if os.path.exists(cred_store):
-            print "\n** Found %s credential store"%constants.CREDENTIALS_STORE_FILE
-            remove_file = to_boolean(raw_input("If you have troubles connecting you may want to remove this file\nRemove ? [N/y] => "),False)
+            print("\n** Found %s credential store"%constants.CREDENTIALS_STORE_FILE)
+            remove_file = to_boolean(input("If you have troubles connecting you may want to remove this file\nRemove ? [N/y] => "),False)
             if remove_file:
                 try:
                     os.remove(cred_store)
                 except:
                     import traceback
                     traceback.print_exc()
-                    print "\n==> Problem removing %s file, please do it on your side and run this assistant again\n"%cred_store
+                    print("\n==> Problem removing %s file, please do it on your side and run this assistant again\n"%cred_store)
                     sys.exit()
 
         # prepare the validation callback in case of missing or invalid credential store
         import webbrowser
         def auth_callback(authorization_uri):
-            print "\n%s file is missing or invalid"%cred_store
-            print """
+            print("\n%s file is missing or invalid"%cred_store)
+            print("""
     _________________________________________________________________
 
     You must authorize this application to access your data
     I will now open a web browser to complete the validation process
     Once this is done, you will get a validation key that you must
     paste below
-    _________________________________________________________________"""
-            raw_input("Press a key when ready...")
+    _________________________________________________________________""")
+            input("Press a key when ready...")
             webbrowser.open(authorization_uri)
-            mycode = raw_input('\n[validation code]: ').strip()
+            mycode = input('\n[validation code]: ').strip()
             return mycode
 
 
         import oauth2services
         try:
-            print "\n** Connecting..."
+            print("\n** Connecting...")
             service = oauth2services.OAuthServices(app_id,cred_store,config.user_name)
             connected = service.refresh() # will call 'auth_callback' if needed
-            print "... Done"
+            print("... Done")
         except Exception as error:
-            print error
-            print "\n==> Connection failed :("
+            print(error)
+            print("\n==> Connection failed :(")
             sys.exit()
 
         if not connected:
-            print "\nThere was an error during the connection"
-            print "Please check your network connection and/or reauthorize this application"
-            print "Exiting..."
+            print("\nThere was an error during the connection")
+            print("Please check your network connection and/or reauthorize this application")
+            print("Exiting...")
             sys.exit()
 
 
        
         if config.albumID != None:
-            keep_album = to_boolean(raw_input("Photo Album is configured (%s), do you want to keep it? [Y/n] => "%config.album_name))
+            keep_album = to_boolean(input("Photo Album is configured (%s), do you want to keep it? [Y/n] => "%config.album_name))
             change_album_id = not keep_album
         else:
-            print "\nNo photo album selected, images will be uploaded to\nGoogle Photo Library (No Album)"
-            change_album_id = to_boolean(raw_input("\nDo you want to select another album for upload? [N/y] => "))
+            print("\nNo photo album selected, images will be uploaded to\nGoogle Photo Library (No Album)")
+            change_album_id = to_boolean(input("\nDo you want to select another album for upload? [N/y] => "))
 
         if change_album_id:
             try:
-                print "\nDownloading %s albums list..."% config.user_name
+                print("\nDownloading %s albums list..."% config.user_name)
                 albums = service.get_user_albums()
-                print "... %d albums found"%(len(albums))
+                print("... %d albums found"%(len(albums)))
                 candidates    = []
                 candidates_id = []
                 album_title = None
                 album_id    = None
                 while True:
-                    search_string = raw_input("Type a part of an existing album name (or return for all): ")
+                    search_string = input("Type a part of an existing album name (or return for all): ")
                     search_string = search_string.lower()
                     candidates    = ["<No Album>","<Create New>"]
                     candidates_id = ["","<New>"]
@@ -973,21 +975,21 @@ def console_assistant():
                             candidates.append(title)
                             candidates_id.append(id)
                     if len(candidates) == 0:
-                        print "Sorry: no match\n"
+                        print("Sorry: no match\n")
                     else:
                         break
-                print "Here's the album that match:"
+                print("Here's the album that match:")
                 for i, title in enumerate(candidates):
-                    print "[%3d] %s"%(i,title)
+                    print("[%3d] %s"%(i,title))
 
                 while True:
-                    album_num = raw_input("Type album number => ")
+                    album_num = input("Type album number => ")
                     try:
                         album_title = candidates[int(album_num)]
                         album_id = candidates_id[int(album_num)]
                         break
                     except:
-                        print "Bad album number!"
+                        print("Bad album number!")
                 if album_id == "":
                     config.albumID = None
                 elif album_id == "<New>":
@@ -997,21 +999,21 @@ def console_assistant():
                     config.albumID = album_id
                 config.album_name = album_title
                 config.write()
-                print "\nAlbum '%s' with id '%s' successfully selected!\n"%(album_title, album_id)
+                print("\nAlbum '%s' with id '%s' successfully selected!\n"%(album_title, album_id))
             except:
                 import traceback
                 traceback.print_exc()
-                print "\n==> Error while fetching user albums, try to re-authenticate the application :("
+                print("\n==> Error while fetching user albums, try to re-authenticate the application :(")
 
 
     # Optional tests for connection
     if config.enable_email:
         config.enable_email_logging = ask_boolean("Do you want to log outgoing email addresses?",config.enable_email_logging)
         config.write()
-        test_email = to_boolean(raw_input("Do you want to test email sending? [N/y] => "),False)
+        test_email = to_boolean(input("Do you want to test email sending? [N/y] => "),False)
 
     if config.enable_upload:
-        test_upload = to_boolean(raw_input("Do you want to test image upload? [N/y] => "),False)
+        test_upload = to_boolean(input("Do you want to test image upload? [N/y] => "),False)
 
     test_connection(service, config, test_email, test_upload)
 
@@ -1027,7 +1029,7 @@ def console_assistant():
     st = os.stat(script_name)
     os.chmod(script_name, st.st_mode | stat.S_IEXEC)
 
-    print """
+    print("""
 
     ________________________________________________________________
 
@@ -1036,7 +1038,7 @@ def console_assistant():
     => %s
     You can tune configuration parameters in scripts/%s
     You can adapt your hardware configuration in scripts/constants.py
-    """% (script_name, constants.CONFIGURATION_FILE)
+    """% (script_name, constants.CONFIGURATION_FILE))
 
 
 def to_boolean(answer, default=True):
@@ -1057,7 +1059,7 @@ def ask_boolean(prompt, current_value):
         choice = "[Y/n]"
     else:
         choice = "[N/y]"
-    return to_boolean(raw_input("%s %s => "%(prompt,choice)),current_value)
+    return to_boolean(input("%s %s => "%(prompt,choice)),current_value)
 
 def test_connection(service,config,test_email,test_upload):
     """Tests email sending and/or image uploading"""
@@ -1071,10 +1073,10 @@ def test_connection(service,config,test_email,test_upload):
     im = Image.new("RGB", (32, 32), "red")
     im.save("test_image.png")
     if test_email:
-        print "\nSending a test message to %s"%username
+        print("\nSending a test message to %s"%username)
         service.send_message(username,"oauth2 message sending works!","Here's the Message body",attachment_file="test_image.png")
     if test_upload:
-        print "\nTesting picture upload in %s's album"%username
+        print("\nTesting picture upload in %s's album"%username)
         service.upload_picture("test_image.png", album_id = config.albumID)
 
 
@@ -1091,10 +1093,10 @@ if __name__ == '__main__':
         try:
             graphical_assistant()
         except Exception as error:
-            print error
-            #import traceback
-            #traceback.print_exc()
+            print(error)
+            import traceback
+            traceback.print_exc()
             import time
             time.sleep(2)
-            print "\nError loading graphical assistant, default to console based\n"
+            print("\nError loading graphical assistant, default to console based\n")
             console_assistant()
