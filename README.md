@@ -11,6 +11,7 @@
  - [X] scripts/hardware_buttons.py
  - [X] scripts/setup.py
  - [X] scripts/tkImagelabel.py
+ - [X] scripts/user_interface.py
 
 # News! Now fully compatible with Google Photos API
 
