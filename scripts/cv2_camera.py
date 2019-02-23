@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import time
 import numpy as np
 import cv2
@@ -52,5 +53,5 @@ def test():
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-    print 'type "q" to quit'
+    print('type "q" to quit')
     test()
