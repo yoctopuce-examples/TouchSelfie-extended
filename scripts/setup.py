@@ -746,7 +746,7 @@ Click the Start button below:
         script = open(script_name,"w")
         script.write("#!/bin/sh\n")
         script.write("cd %s\n"% install_dir)
-        script.write("python user_interface.py $* > %s\n"%(os.path.join(install_dir,"..","photobooth.log")))
+        script.write("python3 user_interface.py $* > %s\n"%(os.path.join(install_dir,"..","photobooth.log")))
         script.close()
         #make the script executable
         import stat
@@ -1022,7 +1022,7 @@ def console_assistant():
     script = open(script_name,"w")
     script.write("#!/bin/sh\n")
     script.write("cd %s\n"% install_dir)
-    script.write("python user_interface.py $* > %s\n"%(os.path.join(install_dir,"..","photobooth.log")))
+    script.write("python3 user_interface.py $* > %s\n"%(os.path.join(install_dir,"..","photobooth.log")))
     script.close()
     #make the script executable
     import stat
