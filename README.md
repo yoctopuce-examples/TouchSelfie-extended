@@ -1,3 +1,9 @@
+# Gradually moving to python 3
+
+## Status
+
+ - [X] scripts/oauth2services.py
+
 # News! Now fully compatible with Google Photos API
 
 Original version of TouchSelfie was based on the, now deprecated, PICASA web API.
