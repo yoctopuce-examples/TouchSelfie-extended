@@ -2,6 +2,10 @@
 
 ## Status
 
+All files translated to python3
+
+## Testers needed!
+
  - [X] scripts/oauth2services.py
  - [X] scripts/mykb.py
  - [X] scripts/configuration.py
