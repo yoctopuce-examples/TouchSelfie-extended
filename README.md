@@ -3,6 +3,7 @@
 ## Status
 
  - [X] scripts/oauth2services.py
+ - [X] scripts/mykb.py
 
 # News! Now fully compatible with Google Photos API
 
