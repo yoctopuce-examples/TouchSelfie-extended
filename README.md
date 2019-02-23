@@ -10,6 +10,7 @@
  - [X] scripts/fakehardware.py
  - [X] scripts/hardware_buttons.py
  - [X] scripts/setup.py
+ - [X] scripts/tkImagelabel.py
 
 # News! Now fully compatible with Google Photos API
 

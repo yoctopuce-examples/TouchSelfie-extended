@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ''' 
 A Tk Image Label which supports animated gifs
 
@@ -5,7 +6,7 @@ This is borrowed (and adapted) from Novel code here:
 https://stackoverflow.com/questions/43770847/play-an-animated-gif-in-python-with-tkinter
 Thanks!
 '''
-from Tkinter import *
+from tkinter import *
 from PIL import ImageTk,Image
 from itertools import count
 import logging
@@ -89,6 +90,6 @@ if __name__ == '__main__':
         lbl.load('anim.gif')
     
     lbl.pack()
-    lbl.load('photo.jpg')
+    lbl.load('collage_four_square.png')
     root.after(5000,next_im)
     root.mainloop()
