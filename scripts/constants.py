@@ -48,7 +48,12 @@ EFFECTS_PARAMETERS = {
         'logo_size' : 128,         # height in pixels of the logo (will be thumbnailed to this size)
         'logo_padding' : 32        # bottom and right padding of the logo (pixels)
     },
-    "Four": { 
+    "Flash": {
+        'snap_size' : v2_full_size, #(width, height) => preferably use integer division of camera resolution
+        'logo_size' : 128,         # height in pixels of the logo (will be thumbnailed to this size)
+        'logo_padding' : 32        # bottom and right padding of the logo (pixels)
+    },
+    "Four": {
         'snap_size' : v2_half_size,                       #(width, height) of each shots of the 2x2 collage
         'foreground_image' : "collage_four_square.png" # Overlay image on top of the collage
     },
@@ -70,6 +75,9 @@ SOFTWARE_BUTTONS = {
         },
     "Animation": {
         "icon" : os.path.join("ressources","ic_anim.png")
+        },
+    "Flash": {
+        "icon" : os.path.join("ressources","ic_flash.png")
         }
 }
 

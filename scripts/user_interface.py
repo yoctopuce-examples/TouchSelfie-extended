@@ -4,6 +4,10 @@ New interface for the photobooth
 @author: Laurent Alacoque 2o18
 """
 import logging
+
+from yoctopuce.yocto_api import *
+from yoctopuce.yocto_relay import *
+
 log = logging.getLogger(__name__)
 logging.getLogger("PIL").setLevel(logging.WARNING)
 logging.basicConfig(format='%(asctime)s|%(name)-16s| %(levelname)-8s| %(message)s',
@@ -289,7 +293,10 @@ class UserInterface():
                 self.software_buttons_images[effect]['size'] = (w,h)
                 total_width = total_width + w
             #we have the total size, compute padding
-            padding = int((self.size[0] - total_width) / (len(SOFTWARE_BUTTONS) - 1))
+            if len(SOFTWARE_BUTTONS) > 1:
+                padding = int((self.size[0] - total_width) / (len(SOFTWARE_BUTTONS) - 1))
+            else:
+                padding = int((self.size[0] - total_width)/2)
             # decurrying of callback parameter
             def snap_factory(effect):
                 def snap_fun():
@@ -445,7 +452,16 @@ class UserInterface():
             self.camera.start_preview()
             # 2. Show initial countdown
             # 3. Take snaps and combine them
-            if mode == 'None':
+            if mode == 'None' or mode == 'Flash':
+                if mode == 'Flash':
+                    self.log.debug("snap: activate flash")
+                    errmsg = YRefParam()
+                    YAPI.UpdateDeviceList(errmsg)
+                    # switch light on
+                    yrelay = YRelay.FirstRelay()
+                    if yrelay is not None:
+                        yrelay.pulse((2 + config.countdown1) * 1000)
+
                 self.log.debug("snap: single picture")
                 self.__show_countdown(config.countdown1,annotate_size = 160)
                 # simple shot with logo
@@ -1061,6 +1077,12 @@ if __name__ == '__main__':
     ch.setLevel(args.log_level)
     ch.setFormatter(logging.Formatter(fmt='%(levelname)-8s|%(asctime)s| %(message)s', datefmt="%H:%M:%S"))
     logging.getLogger("").addHandler(ch)
+
+    log.info("YAPI lib : " + YAPI.GetAPIVersion())
+    errmsg = YRefParam()
+    if YAPI.RegisterHub("localhost", errmsg) != YAPI.SUCCESS:
+        log.critical("Unable to contact Vhub: "+errmsg.value)
+        sys.exit()
 
     #TODO move every arguments into config file
     ui = UserInterface(config,window_size=(SCREEN_W, SCREEN_H),log_level = logging.DEBUG)

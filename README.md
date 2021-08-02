@@ -23,7 +23,8 @@ For hardware construction, see [Make Magazine article](https://makezine.com/proj
 
 ## Take a shortcut:
 - [Installation](#install)
-- [What's new?](#changes)
+- [What's new?](#changes) 
+- [Control external light](#change-yocto)
 - [A note on confidentiality and security](#confidentiality)
 
 ## <a id="install"></a>Installing (extracted and adapted from [Make Magazine](https://makezine.com/projects/raspberry-pi-photo-booth/))
@@ -157,6 +158,35 @@ This is only needed if you plan to use the 'send email' or 'upload images to clo
   - enable/disable auto-upload
   - enable/disable hardware buttons support (on-screen buttons displayed instead)
   - *Use `python user_interface.py --help` for a description of command line options*
+
+
+## <a id="change-yocto"></a>Control external light with a Yocto-PowerRelay-V3 
+Add new "Flash" icon that can switch a Yoctopuce Yocto-PowerRelay-V3 to power On and OFF an external light. 
+We have made a blog post on this this feature : https://www.yoctopuce.com/EN/article/building-a-photo-booth
+
+### Additional install command
+
+The script require the Yoctopuce library to be able to communicate with the Yocto-PowerRelay-V3. It can be installed
+with the following command:
+```
+# Install Yoctopuce library from PiPY
+sudo pip install yoctopuce
+```
+
+### The executable stop with the the message: "the user has insufficient permissions to access USB devices"
+
+By default, Linux prevents write access to USB devices for non-root users. This is due to udev device manager. To work around the problem, the most basic solution is simply to run the executables as root using the sudo command.
+```
+sudo photobooth.sh
+```
+However, for convenience and security, it is better to add an udev rule that grants users or groups write access to Yoctopuce devices.
+The udev rules are stored in files placed in the ```/etc/udev/rules.d``` directory. The file name must matche the "##-ArbitraryName.rules" pattern. When starting the system, udev will read in alphabetical order all files with the extension ".rules" in this directory, and apply the rules.
+
+The following rule allows all users to read and write to Yoctopuce USB devices. Access rights for all other devices are not changed.
+```
+# udev rules to allow write access to all users for Yoctopuce USB devices
+SUBSYSTEM=="usb", ATTR{idVendor}=="24e0", MODE="0666"
+```
 
 ## <a id="confidentiality"></a>A note on security and confidentiality
 
